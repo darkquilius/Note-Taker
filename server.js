@@ -18,7 +18,11 @@ app.get("/notes", function(req, res) {
 
 
 app.get("/api/notes", function(req, res) {
-    return res.json(db)
+    fs.readFile("./db/db.json", function(err, data) {
+        if (err) throw err;
+        return res.json(JSON.parse(data))
+    })
+
 })
 
 app.get("/", function(req, res) {
@@ -41,15 +45,16 @@ app.post("/api/notes", function(req, res) {
 
 app.delete("/api/notes/:id", function(req, res) {
     let id = req.params.id;
-    console.log(parseInt(id))
+    let newNotes;
     fs.readFile("./db/db.json", "utf8", function(err, data) {
         if (err) throw err;
         let notes = JSON.parse(data)
-        let newNotes = notes.filter((note) => note.id != id);
+        newNotes = notes.filter((note) => note.id != id);
         console.log(newNotes)
         fs.writeFile("./db/db.json", JSON.stringify(newNotes), function(err) {
             if (err) throw err
         })
+
     })
     res.end()
 })
