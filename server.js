@@ -9,19 +9,19 @@ var PORT = process.env.PORT || 3000;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static('public'))
+app.use(express.static('public'));
 
 app.get("/notes", function(req, res) {
     res.sendFile(path.join(__dirname, "/public/notes.html"))
-})
+});
 
 
 
 app.get("/api/notes", function(req, res) {
     fs.readFile("./db/db.json", function(err, data) {
         if (err) throw err;
-        return res.json(JSON.parse(data))
-    })
+        return res.json(JSON.parse(data));
+    });
 
 })
 
@@ -30,16 +30,18 @@ app.get("/", function(req, res) {
 })
 
 app.post("/api/notes", function(req, res) {
-    let lastID = db[db.length - 1].id
-    index = lastID + 1
     let note = req.body
-    note.id = index;
-    db.push(note);
-    file = JSON.stringify(db)
-    fs.writeFile("./db/db.json", file, function(err) {
-        if (err) { throw err }
-        console.log("success!")
+    note.id = Math.random() * 100
+    fs.readFile("./db/db.json", "utf8", function(err, data) {
+        if (err) throw err;
+        let noteList = JSON.parse(data);
+        noteList.push(note);
+        fs.writeFile("./db/db.json", JSON.stringify(noteList), function(err) {
+            if (err) throw err;
+            console.log("success!")
+        })
     })
+
     return res.json(note);
 });
 
@@ -50,7 +52,6 @@ app.delete("/api/notes/:id", function(req, res) {
         if (err) throw err;
         let notes = JSON.parse(data)
         newNotes = notes.filter((note) => note.id != id);
-        console.log(newNotes)
         fs.writeFile("./db/db.json", JSON.stringify(newNotes), function(err) {
             if (err) throw err
         })

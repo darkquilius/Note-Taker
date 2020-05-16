@@ -9,7 +9,6 @@ var activeNote = {};
 
 // A function for getting all notes from the db
 var getNotes = function() {
-    console.log("get notes working")
     return $.ajax({
         url: "/api/notes",
         method: "GET"
@@ -27,10 +26,6 @@ var saveNote = function(note) {
 
 // A function for deleting a note from the db
 var deleteNote = function(id) {
-    // if (id == 0) {
-    //     window.alert("Cannot delete test note...")
-    // }
-    console.log("delete note woring")
     return $.ajax({
         url: "api/notes/" + id,
         method: "DELETE"
@@ -39,7 +34,6 @@ var deleteNote = function(id) {
 
 // If there is an activeNote, display it, otherwise render empty inputs
 var renderActiveNote = function() {
-    console.log("started render active note")
     $saveNoteBtn.hide();
 
     if (activeNote.id >= 0) {
@@ -53,7 +47,6 @@ var renderActiveNote = function() {
         $noteTitle.val("");
         $noteText.val("");
     }
-    console.log("render active note worked")
 };
 
 // Get the note data from the inputs, save it to the db and update the view
@@ -73,25 +66,15 @@ var handleNoteSave = function() {
 var handleNoteDelete = function(event) {
     // prevents the click listener for the list from being called when the button inside of it is clicked
     event.stopPropagation();
-    console.log("starting handle note delete")
     var note = $(this)
         .parent(".list-group-item")
         .data();
 
-    // if (note.id == 0) {
-    //     window.alert("Cannot delete initial test note... Sorry...")
-    //     return
-    // }
-    console.log(note)
     if (activeNote.id === note.id) {
         activeNote = {};
     }
-    console.log(note.id)
-    console.log("starting delete note")
     deleteNote(note.id).then(function() {
-        console.log("going into get and render notes")
         getAndRenderNotes();
-        console.log("going into render active note")
         renderActiveNote();
     });
 };
@@ -120,8 +103,6 @@ var handleRenderSaveBtn = function() {
 
 // Render's the list of note titles
 var renderNoteList = function(notes) {
-    console.log("render notes working")
-    console.log(notes)
     $noteList.empty();
 
     var noteListItems = [];
@@ -138,15 +119,12 @@ var renderNoteList = function(notes) {
         $li.append($span, $delBtn);
         noteListItems.push($li);
     }
-    console.log(noteListItems)
     $noteList.append(noteListItems);
 };
 
 // Gets notes from the db and renders them to the sidebar
 var getAndRenderNotes = function() {
-    console.log("started get and render")
     return getNotes().then(function(data) {
-        console.log(data)
         renderNoteList(data);
     });
 };
